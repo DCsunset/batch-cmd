@@ -30,7 +30,7 @@ class CommandExecutor {
     );
   }
 
-  aggregate_output(source: "stdout" | "stderr", encoding?: BufferEncoding) {
+  collect_output(source: "stdout" | "stderr", encoding?: BufferEncoding) {
     return asyncInterleaveReady(
       ...this.processes.map((p, i) => (
         asyncMap(
@@ -57,9 +57,29 @@ class CommandExecutor {
     // no more input
     this.processes.forEach(p => p.stdin?.end());
   }
+
+  /// Kill all processes with a signal
+  kill(signal?: number | NodeJS.Signals) {
+    return this.processes.map(p => p.kill(signal));
+  }
+}
+
+
+class SshExecutor extends CommandExecutor {
+  sshCommand: string;
+
+  constructor(hosts: string[], sshCommand: string = "ssh") {
+    super(hosts);
+    this.sshCommand = sshCommand;
+  }
+
+  run(template: string) {
+    super.run(`${this.sshCommand} {0} -- ${template}`);
+  }
 }
 
 export {
-  CommandExecutor
+  CommandExecutor,
+  SshExecutor
 };
 

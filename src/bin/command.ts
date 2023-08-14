@@ -15,17 +15,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SshExecutor } from "./executor";
+import { CommandExecutor } from "../executor";
+import { asyncInterleaveReady, asyncMap } from "iter-tools-es";
 
 const variables = ["a", "b", "c"];
 // const template = "echo Message: {}";
-const template = "echo {0}";
-const executor = new SshExecutor(variables);
+const template = "cat -";
+const executor = new CommandExecutor(variables);
 executor.run(template);
 executor.pipe_input(process.stdin);
 
-for await (const { data, variable } of executor.collect_output("stdout", "utf-8")) {
-  console.log(`From ${variable}: ${data.trimEnd()}`);
+const stdout = asyncMap(
+  ({ data, variable }) => ({ data, variable, source: "stdout" }),
+  executor.collect_output("stdout", "utf-8")
+);
+const stderr = asyncMap(
+  ({ data, variable }) => ({ data, variable, source: "stderr" }),
+  executor.collect_output("stderr", "utf-8")
+);
+
+for await (const { data, variable, source } of asyncInterleaveReady(stdout, stderr)) {
+  console.log(`From ${variable} ${source}: ${data.trimEnd()}`);
 }
 
 await executor.wait();
