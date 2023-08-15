@@ -1,10 +1,28 @@
+// Copyright (C) 2023  DCsunset
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
 import { spawn, ChildProcess } from "node:child_process";
+import stream from "node:stream";
 import stringFormat from "string-format";
 import { AsyncWrappable, asyncInterleaveReady, asyncMap, asyncWrap } from "iter-tools-es";
+import { createInterface } from "node:readline";
 
 class CommandExecutor {
-  processes: ChildProcess[];
   variables: string[];
+  processes: ChildProcess[] = [];
 
   constructor(variables: string[]) {
     this.variables = variables;
@@ -17,7 +35,7 @@ class CommandExecutor {
         stringFormat(template, v),
         { shell: true }
       )
-    ))
+    ));
   }
 
   wait() {
@@ -30,14 +48,26 @@ class CommandExecutor {
     );
   }
 
-  collect_output(source: "stdout" | "stderr", encoding?: BufferEncoding) {
+  /// Line mode means collect output line by line
+  collect_output(source: "stdout" | "stderr", encoding?: BufferEncoding, lineMode?: boolean) {
+    const transform = (s: stream.Readable | null) => {
+      if (!s) {
+        return null;
+      }
+      let result: AsyncIterable<any> = s;
+      if (encoding) {
+        result = s.setEncoding(encoding);
+      }
+      if (lineMode) {
+        result = createInterface({ input: s });
+      }
+      return result;
+    };
     return asyncInterleaveReady(
       ...this.processes.map((p, i) => (
         asyncMap(
           data => ({ data, variable: this.variables[i] }),
-          encoding
-            ? p[source]?.setEncoding(encoding)
-            : p[source]
+          transform(p[source])
         )
       ))
     );
@@ -52,7 +82,7 @@ class CommandExecutor {
         } else {
           resolve();
         }
-      })))
+      })));
     }
     // no more input
     this.processes.forEach(p => p.stdin?.end());
