@@ -18,6 +18,7 @@
 import { open } from "node:fs/promises";
 import { AsyncWrappable, arrayFromAsync, asyncFilter, asyncForEach, asyncInterleaveReady, asyncMap, findBest, firstHighest } from "iter-tools-es";
 import { Command } from "commander";
+import chalk from "chalk";
 import { CommandExecutor } from "../executor.js";
 
 const program = new Command();
@@ -67,7 +68,9 @@ async function execute(template: string, options: Options) {
   const maxLen = findBest(firstHighest, vars.map(v => v.length))!;
   for await (const { data, variable, source } of asyncInterleaveReady(stdout, stderr)) {
     const outputFn = source === "stdout" ? console.log : console.error;
-    outputFn(`${variable.padEnd(maxLen)} | ${data.trimEnd()}`);
+    const colorize = source === "stdout" ? chalk.gray : chalk.red;
+    const prefix = colorize(`${variable.padEnd(maxLen)} |`);
+    outputFn(`${prefix} ${data.trimEnd()}`);
   }
 
   await executor.wait();

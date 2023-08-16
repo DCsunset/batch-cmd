@@ -59,7 +59,7 @@ async function execute(template: string, options: Options) {
 
   const executor = new SshExecutor(hosts, options.ssh);
   executor.run(template);
-  executor.pipe_input(process.stdin);
+  const inputPromise = executor.pipe_input(process.stdin);
 
   const stdout = asyncMap(
     ({ data, variable }) => ({ data, variable, source: "stdout" }),
@@ -73,7 +73,9 @@ async function execute(template: string, options: Options) {
   const maxLen = findBest(firstHighest, hosts.map(h => h.length))!;
   for await (const { data, variable, source } of asyncInterleaveReady(stdout, stderr)) {
     const outputFn = source === "stdout" ? console.log : console.error;
-    outputFn(`${variable.padEnd(maxLen)} | ${data.trimEnd()}`);
+    const colorize = source === "stdout" ? chalk.gray : chalk.red;
+    const prefix = colorize(`${variable.padEnd(maxLen)} |`);
+    outputFn(`${prefix} ${data.trimEnd()}`);
   }
 
   await executor.wait();
