@@ -16,11 +16,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { open } from "node:fs/promises";
-import { AsyncWrappable, arrayFromAsync, asyncFilter, asyncForEach, asyncInterleaveReady, asyncMap, findBest, firstHighest } from "iter-tools-es";
+import { asyncFilter, asyncForEach } from "iter-tools-es";
 import { Command } from "commander";
-import chalk from "chalk";
 import { CommandExecutor } from "../executor.js";
-import { SignalHandler } from "../signal.js";
+import { runExecutor, setupSignalHandler } from "../cli.js";
 
 const program = new Command();
 
@@ -54,42 +53,8 @@ async function execute(template: string, options: Options) {
   }
 
   const executor = new CommandExecutor(vars);
-  const signalHandler = new SignalHandler(["SIGINT", "SIGTERM"], (sig, cnt) => {
-    if (cnt === 1) {
-      console.error(chalk.yellowBright("Terminating all commands..."));
-      executor.kill("SIGTERM");
-    }
-    else {
-      console.error(chalk.redBright("Killing all commands..."));
-      executor.kill("SIGKILL");
-    }
-  });
-
-  signalHandler.register();
-  executor.run(template);
-  const inputPromise = executor.pipe_input(process.stdin);
-
-  const stdout = asyncMap(
-    ({ data, variable }) => ({ data, variable, source: "stdout" }),
-    executor.collect_output("stdout", "utf-8", true)
-  );
-  const stderr = asyncMap(
-    ({ data, variable }) => ({ data, variable, source: "stderr" }),
-    executor.collect_output("stderr", "utf-8", true)
-  );
-
-  const maxLen = findBest(firstHighest, vars.map(v => v.length))!;
-  for await (const { data, variable, source } of asyncInterleaveReady(stdout, stderr)) {
-    const outputFn = source === "stdout" ? console.log : console.error;
-    const colorize = source === "stdout" ? chalk.gray : chalk.red;
-    const prefix = colorize(`${variable.padEnd(maxLen)} |`);
-    outputFn(`${prefix} ${data.trimEnd()}`);
-  }
-
-  await executor.wait();
-  // Close input pipe
-  process.stdin.emit("end");
-  await inputPromise;
+  setupSignalHandler(executor);
+  await runExecutor(executor, template);
 }
 
 try {
