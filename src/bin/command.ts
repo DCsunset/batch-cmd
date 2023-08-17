@@ -20,6 +20,7 @@ import { AsyncWrappable, arrayFromAsync, asyncFilter, asyncForEach, asyncInterle
 import { Command } from "commander";
 import chalk from "chalk";
 import { CommandExecutor } from "../executor.js";
+import { SignalHandler } from "../signal.js";
 
 const program = new Command();
 
@@ -53,6 +54,18 @@ async function execute(template: string, options: Options) {
   }
 
   const executor = new CommandExecutor(vars);
+  const signalHandler = new SignalHandler(["SIGINT", "SIGTERM"], (sig, cnt) => {
+    if (cnt === 1) {
+      console.error(chalk.yellowBright("Terminating all commands..."));
+      executor.kill("SIGTERM");
+    }
+    else {
+      console.error(chalk.redBright("Killing all commands..."));
+      executor.kill("SIGKILL");
+    }
+  });
+
+  signalHandler.register();
   executor.run(template);
   const inputPromise = executor.pipe_input(process.stdin);
 

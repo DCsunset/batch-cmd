@@ -18,7 +18,9 @@
 import { open } from "node:fs/promises";
 import { arrayFromAsync, asyncFilter, asyncForEach, asyncInterleaveReady, asyncMap, findBest, firstHighest } from "iter-tools-es";
 import { Command } from "commander";
+import chalk from "chalk";
 import { SshExecutor } from "../executor.js";
+import { SignalHandler } from "../signal.js";
 
 const program = new Command();
 
@@ -58,6 +60,18 @@ async function execute(template: string, options: Options) {
   }
 
   const executor = new SshExecutor(hosts, options.ssh);
+  const signalHandler = new SignalHandler(["SIGINT", "SIGTERM"], (sig, cnt) => {
+    if (cnt === 1) {
+      console.error(chalk.yellowBright("Terminating all commands..."));
+      executor.kill("SIGTERM");
+    }
+    else {
+      console.error(chalk.redBright("Killing all commands..."));
+      executor.kill("SIGKILL");
+    }
+  });
+
+  signalHandler.register();
   executor.run(template);
   const inputPromise = executor.pipe_input(process.stdin);
 
