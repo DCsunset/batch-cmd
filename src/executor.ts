@@ -21,10 +21,11 @@ import { AsyncWrappable, asyncInterleaveReady, asyncMap, asyncWrap } from "iter-
 import { createInterface } from "node:readline";
 
 class CommandExecutor {
-  variables: string[];
+  /// Pass a list of variables to each command
+  variables: string[][];
   processes: ChildProcess[] = [];
 
-  constructor(variables: string[]) {
+  constructor(variables: string[][]) {
     this.variables = variables;
   }
 
@@ -32,7 +33,7 @@ class CommandExecutor {
   run(template: string) {
     this.processes = this.variables.map(v => (
       spawn(
-        stringFormat(template, v),
+        stringFormat(template, ...v),
         { shell: true }
       )
     ));
@@ -94,12 +95,12 @@ class CommandExecutor {
   }
 }
 
-
 class SshExecutor extends CommandExecutor {
   sshCommand: string;
 
-  constructor(hosts: string[], sshCommand: string = "ssh") {
-    super(hosts);
+  /// The first var for each command must be the host
+  constructor(vars: string[][], sshCommand: string = "ssh") {
+    super(vars);
     this.sshCommand = sshCommand;
   }
 

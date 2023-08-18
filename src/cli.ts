@@ -1,7 +1,30 @@
 import chalk from "chalk";
-import { asyncMap, findBest, firstHighest, asyncInterleaveReady } from "iter-tools-es";
+import { open } from "node:fs/promises";
+import { asyncMap, asyncFilter, findBest, firstHighest, asyncInterleaveReady, asyncForEach } from "iter-tools-es";
 import { CommandExecutor } from "./executor.js";
 import { SignalHandler } from "./signal.js";
+
+// parse variables from command-line input
+export async function parseVars(vars?: string[], file?: string, sep?: string) {
+  const variables: string[][] = vars
+    ? vars.map(v => sep ? v.split(sep) : [v])
+    : [];
+  if (file) {
+    const f = await open(file);
+    // append to vars
+    await asyncForEach(
+      (v: string) => variables.push(
+        sep ? v.split(sep) : [v]
+      ),
+      asyncFilter(
+        // Ignore empty line
+        (v: string) => v.length > 0,
+        f.readLines()
+      )
+    );
+  }
+  return variables;
+}
 
 export function setupSignalHandler(executor: CommandExecutor) {
   const signalHandler = new SignalHandler(["SIGINT", "SIGTERM"], (sig, cnt) => {
@@ -18,7 +41,7 @@ export function setupSignalHandler(executor: CommandExecutor) {
   signalHandler.register();
 }
 
-export async function runExecutor(executor: CommandExecutor, template: string) {
+export async function runExecutor(executor: CommandExecutor, template: string, sep?: string) {
   executor.run(template);
   const inputPromise = executor.pipe_input(process.stdin);
 
@@ -31,11 +54,13 @@ export async function runExecutor(executor: CommandExecutor, template: string) {
     executor.collect_output("stderr", "utf-8", true)
   );
 
-  const maxLen = findBest(firstHighest, executor.variables.map(v => v.length))!;
+  const vars = executor.variables.map(v => sep ? v.join(sep) : v[0]);
+  const maxLen = findBest(firstHighest, vars.map(v => v.length))!;
   for await (const { data, variable, source } of asyncInterleaveReady(stdout, stderr)) {
+    const v = sep ? variable.join(sep) : variable[0];
     const outputFn = source === "stdout" ? console.log : console.error;
     const colorize = source === "stdout" ? chalk.gray : chalk.red;
-    const prefix = colorize(`${variable.padEnd(maxLen)} |`);
+    const prefix = colorize(`${v.padEnd(maxLen)} |`);
     outputFn(`${prefix} ${data.trimEnd()}`);
   }
 

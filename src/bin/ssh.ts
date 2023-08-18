@@ -15,52 +15,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { open } from "node:fs/promises";
-import { asyncFilter, asyncMap, asyncForEach } from "iter-tools-es";
 import { Command } from "commander";
 import { SshExecutor } from "../executor.js";
-import { runExecutor, setupSignalHandler } from "../cli.js";
+import { parseVars, runExecutor, setupSignalHandler } from "../cli.js";
 
 const program = new Command();
 
 type Options = {
   ssh: string,
   file?: string,
-  hosts?: string[]
+  vars?: string[],
+  sep?: string
 };
 
 program
   .name("batch-cmd")
   .description("Execute multiple commands in batch concurrently")
   .version("v0.1.0")
-  .option("-s, --ssh", "ssh command to use", "ssh")
+  .option("--ssh", "ssh command to use", "ssh")
   .option("-f, --file <file>", "use a file in which each line contains a host to execute command on")
-  .option("-h, --hosts <host...>", "a list of hosts used in the template command")
+  .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
+  .option("-s, --sep <separator>", "separator to split the variable")
   .argument("<template>", "template command to execute remotely")
   .action(execute);
 
 async function execute(template: string, options: Options) {
-  const hosts: string[] = options.hosts ?? [];
-  if (options.file) {
-    const file = await open(options.file);
-    // append to vars
-    await asyncForEach(
-      (h: string) => hosts.push(h),
-      asyncFilter(
-        // Ignore empty line
-        (v: string) => v.length > 0,
-        asyncMap(
-          // trim whitespaces (not allowed for host)
-          (v: string) => v.trim(),
-          file.readLines()
-        )
-      )
-    );
-  }
-
-  const executor = new SshExecutor(hosts, options.ssh);
+  const vars = await parseVars(options.vars, options.file, options.sep);
+  const executor = new SshExecutor(vars, options.ssh);
   setupSignalHandler(executor);
-  await runExecutor(executor, template);
+  await runExecutor(executor, template, options.sep);
 }
 
 try {

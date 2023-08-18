@@ -15,17 +15,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { open } from "node:fs/promises";
-import { asyncFilter, asyncForEach } from "iter-tools-es";
 import { Command } from "commander";
 import { CommandExecutor } from "../executor.js";
-import { runExecutor, setupSignalHandler } from "../cli.js";
+import { parseVars, runExecutor, setupSignalHandler } from "../cli.js";
 
 const program = new Command();
 
 type Options = {
   file?: string,
-  vars?: string[]
+  vars?: string[],
+  sep?: string
 };
 
 program
@@ -34,27 +33,15 @@ program
   .version("v0.1.0")
   .option("-f, --file <file>", "use a file in which each line contains a variable for the template command")
   .option("-v, --vars <var...>", "a list of variables used in the template command")
+  .option("-s, --sep <separator>", "separator to split the variable")
   .argument("<template>", "template command to execute in batch")
   .action(execute);
 
 async function execute(template: string, options: Options) {
-  const vars: string[] = options.vars ?? [];
-  if (options.file) {
-    const file = await open(options.file);
-    // append to vars
-    await asyncForEach(
-      (v: string) => vars.push(v),
-      asyncFilter(
-        // Ignore empty line
-        (v: string) => v.length > 0,
-        file.readLines()
-      )
-    );
-  }
-
+  const vars = await parseVars(options.vars, options.file, options.sep);
   const executor = new CommandExecutor(vars);
   setupSignalHandler(executor);
-  await runExecutor(executor, template);
+  await runExecutor(executor, template, options.sep);
 }
 
 try {
