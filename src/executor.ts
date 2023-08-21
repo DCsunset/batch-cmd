@@ -26,6 +26,9 @@ class CommandExecutor {
   processes: ChildProcess[] = [];
 
   constructor(variables: string[][]) {
+    if (variables.length === 0) {
+      throw new Error("No variable provided");
+    }
     this.variables = variables;
   }
 
