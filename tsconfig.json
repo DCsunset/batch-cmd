@@ -7,7 +7,7 @@
 		"target": "ESNext",
 		"outDir": "./dist",
 		"sourceMap": true,
-		"strict": true,
+		"strict": true
   },
   "include": [
     "src/"

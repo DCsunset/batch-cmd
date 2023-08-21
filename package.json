@@ -4,8 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "batch-cmd": "vite-node ./src/bin/command.ts",
-    "batch-ssh": "vite-node ./src/bin/ssh.ts",
+    "test": "vite-node ./tests/basic.ts",
     "build": "rm -rf dist && tsc"
   },
   "keywords": [],
