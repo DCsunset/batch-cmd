@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.1](https://github.com/DCsunset/batch-cmd/compare/v0.1.0...v0.1.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* fix README in npm registry ([dd74fe2](https://github.com/DCsunset/batch-cmd/commit/dd74fe2b1841845001beb308ca596781a8d05ed0))
+
+
+### Misc
+
+* add link to changelog ([2c9b6f6](https://github.com/DCsunset/batch-cmd/commit/2c9b6f6e86acc845ebd0b61c1d94453e3c535267))
+
 ## 0.1.0 (2023-08-22)
 
 
