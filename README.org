@@ -87,6 +87,10 @@ Example usage:
   await runExecutor(executor, "echo From {0}: {1}", ":");
 #+end_src
 
+** Changelog
+
+See [[https://github.com/DCsunset/batch-cmd/blob/main/CHANGELOG.md][CHANGELOG.md]].
+
 ** License
 
 This project is licensed under AGPL-3.0.
