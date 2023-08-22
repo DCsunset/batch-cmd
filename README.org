@@ -1,5 +1,9 @@
 * batch-cmd
 
+# use $.svg to make it render as image
+[[https://npmjs.org/package/batch-cmd][https://badgen.net/npm/v/batch-cmd#.svg]]
+[[https://npmjs.org/package/batch-cmd][https://badgen.net/npm/types/batch-cmd#.svg]]
+
 Executing multiple commands in batches concurrently.
 It provides useful command-line tools and can also be imported as a library in JS (ESM).
 
