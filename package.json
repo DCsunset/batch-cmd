@@ -1,11 +1,13 @@
 {
   "name": "batch-cmd",
   "version": "1.0.0",
-  "description": "",
+  "description": "Executing multiple commands in batches concurrently.",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.js",
   "type": "module",
   "scripts": {
     "test": "vite-node ./tests/basic.ts",
-    "build": "rm -rf dist && tsc"
+    "build": "rm -rf dist && tsc --declaration"
   },
   "keywords": [],
   "author": "DCsunset",

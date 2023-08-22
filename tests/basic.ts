@@ -1,5 +1,4 @@
-import { CommandExecutor } from "../src/executor.js";
-import { runExecutor } from "../src/cli.js";
+import { CommandExecutor, runExecutor } from "../src/lib.js";
 
 const executor = new CommandExecutor([
   ["a", "1"],
