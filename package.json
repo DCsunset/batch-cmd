@@ -10,9 +10,9 @@
     "build": "rm -rf dist && tsc --declaration && pandoc -s README.org -o README.md"
   },
   "files": [
-    "dist/",
-    "LICENSE",
-    "README.md"
+    "/dist",
+    "/LICENSE",
+    "/README.md"
   ],
   "bin": {
     "bcmd": "./dist/bin/command.js",
