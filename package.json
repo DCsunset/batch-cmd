@@ -26,6 +26,14 @@
     "cli",
     "library"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DCsunset/batch-cmd.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DCsunset/batch-cmd/issues"
+  },
+  "homepage": "https://github.com/DCsunset/batch-cmd",
   "author": "DCsunset",
   "license": "AGPL-3.0",
   "devDependencies": {
