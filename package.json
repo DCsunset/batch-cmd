@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "test": "vite-node ./tests/basic.ts",
-    "build": "rm -rf dist && tsc --declaration && pandoc -s README.org -o dist/README.md"
+    "build": "rm -rf dist && tsc --declaration && pandoc -s README.org -o README.md"
   },
   "files": [
     "dist/",
