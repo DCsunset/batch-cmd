@@ -49,5 +49,7 @@ try {
 }
 catch (err: any) {
 	console.error("Error:", (err as Error).message);
+  // Close input pipe in case of hanging
+  process.stdin.emit("end");
 }
 
