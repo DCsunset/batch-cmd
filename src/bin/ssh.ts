@@ -25,7 +25,8 @@ type Options = {
   ssh: string,
   file?: string,
   vars?: string[],
-  sep?: string
+  sep?: string,
+  debug?: boolean
 };
 
 program
@@ -36,22 +37,27 @@ program
   .option("-f, --file <file>", "use a file in which each line contains a host to execute command on")
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
+  .option("--debug", "enable debug mesages")
   .argument("<template>", "template command to execute remotely")
   .action(execute);
 
 async function execute(template: string, options: Options) {
-  const vars = await parseVars(options.vars, options.file, options.sep);
-  const executor = new SshExecutor(vars, options.ssh);
-  setupSignalHandler(executor);
-  await runExecutor(executor, template, options.sep);
+  try {
+    const vars = await parseVars(options.vars, options.file, options.sep);
+    const executor = new SshExecutor(vars, options.ssh);
+    setupSignalHandler(executor);
+    await runExecutor(executor, template, options.sep);
+  }
+  catch (err: any) {
+    if (options.debug) {
+      console.error(err.stack);
+    } else {
+      console.error("Error:", (err as Error).message);
+    }
+    // Close input pipe in case of hanging
+    process.stdin.emit("end");
+  }
 }
 
-try {
-  await program.parseAsync();
-}
-catch (err: any) {
-	console.error("Error:", (err as Error).message);
-  // Close input pipe in case of hanging
-  process.stdin.emit("end");
-}
+await program.parseAsync();
 
