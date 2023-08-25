@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.2](https://github.com/DCsunset/batch-cmd/compare/v0.1.1...v0.1.2) (2023-08-25)
+
+
+### Features
+
+* add debug option for more verbose error messages ([42ff0b8](https://github.com/DCsunset/batch-cmd/commit/42ff0b86d2e9ef1926cbe5cc6f400fdf081261f6))
+
+
+### Misc
+
+* add badges ([6b43c5c](https://github.com/DCsunset/batch-cmd/commit/6b43c5ce6d3fa2507f652a2492854417268bc92d))
+* add github page to package.json ([8835bf0](https://github.com/DCsunset/batch-cmd/commit/8835bf0ef118b72614332c680ea849ce528aed27))
+* add README.org to npmignore ([ba8cd98](https://github.com/DCsunset/batch-cmd/commit/ba8cd983bbcfae14e974c33ed8d2487124e424f8))
+* use absolute path for files in package.json ([dc2053e](https://github.com/DCsunset/batch-cmd/commit/dc2053e16e78e6c6cd37e5762e079c4014bcc45d))
+
 ## [0.1.1](https://github.com/DCsunset/batch-cmd/compare/v0.1.0...v0.1.1) (2023-08-22)
 
 
