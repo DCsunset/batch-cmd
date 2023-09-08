@@ -33,7 +33,8 @@ while the second one is more conveniently for running commands on remote machine
 Both tools will handle OS signals in the following way:
 
 - Upon receiving the first ~SIGINT~ / ~SIGTERM~: the program will send ~SIGTERM~ to all running commands and wait for them to stop.
-- Upon receiving more than one ~SIGINT~ / ~SIGTERM~: the program will send ~SIGKILL~ to force kill all running commands.
+- Upon receiving the second  ~SIGINT~ / ~SIGTERM~: the program will send ~SIGKILL~ to force kill all running commands.
+- Upon receiving more than two ~SIGINT~ / ~SIGTERM~: the program itself will exit forcefully.
 
 Both tools will pass input from ~stdin~ to ~stdin~ of all the commands.
 It will also collect ~stdout~ / ~stderr~ from all commands and output in the ~stdout~ / ~stderr~,
