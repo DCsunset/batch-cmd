@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.3](https://github.com/DCsunset/batch-cmd/compare/v0.1.2...v0.1.3) (2023-09-08)
+
+
+### Bug Fixes
+
+* avoid killing exited process and support exiting forcefully ([f7334fe](https://github.com/DCsunset/batch-cmd/commit/f7334fe4b01b649ac67bfaaa98cfe5995790124e))
+
+
+### Misc
+
+* update README ([36264fa](https://github.com/DCsunset/batch-cmd/commit/36264fae22487afe994aa6a68fca6b86f7dbb773))
+
 ## [0.1.2](https://github.com/DCsunset/batch-cmd/compare/v0.1.1...v0.1.2) (2023-08-25)
 
 
