@@ -94,7 +94,10 @@ class CommandExecutor {
 
   /// Kill all processes with a signal
   kill(signal?: number | NodeJS.Signals) {
-    return this.processes.map(p => p.kill(signal));
+    return this.processes.map(p => (
+      // only kill running process, otherwise it may result in unexpected result
+      p.exitCode === null ? p.kill() : false
+    ));
   }
 }
 

@@ -47,9 +47,13 @@ export function setupSignalHandler(executor: CommandExecutor) {
       console.error(chalk.yellowBright("Terminating all commands..."));
       executor.kill("SIGTERM");
     }
-    else {
+    else if (cnt === 2) {
       console.error(chalk.redBright("Killing all commands..."));
       executor.kill("SIGKILL");
+    }
+    else {
+      console.error(chalk.redBright("Force exiting..."));
+      process.exit(1);
     }
   });
 
