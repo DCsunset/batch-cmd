@@ -38,15 +38,15 @@ program
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
   .option("--debug", "enable debug mesages")
-  .argument("<template>", "template command to execute remotely")
+  .argument("<template...>", "template command to execute in batch (multiple args will be joined with spaces)")
   .action(execute);
 
-async function execute(template: string, options: Options) {
+async function execute(template: string[], options: Options) {
   try {
     const vars = await parseVars(options.vars, options.file, options.sep);
     const executor = new SshExecutor(vars, options.ssh);
     setupSignalHandler(executor);
-    await runExecutor(executor, template, options.sep);
+    await runExecutor(executor, template.join(" "), options.sep);
   }
   catch (err: any) {
     if (options.debug) {
