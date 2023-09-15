@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.4](https://github.com/DCsunset/batch-cmd/compare/v0.1.3...v0.1.4) (2023-09-15)
+
+
+### Bug Fixes
+
+* support using command template without quotes ([7041079](https://github.com/DCsunset/batch-cmd/commit/7041079255aa36eaf42aadfbd318bee6c89562d8))
+
 ## [0.1.3](https://github.com/DCsunset/batch-cmd/compare/v0.1.2...v0.1.3) (2023-09-08)
 
 
