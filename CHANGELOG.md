@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.5](https://github.com/DCsunset/batch-cmd/compare/v0.1.4...v0.1.5) (2023-10-07)
+
+
+### Bug Fixes
+
+* close input pipe before killing to prevent hanging ([f8d2da3](https://github.com/DCsunset/batch-cmd/commit/f8d2da391ce95401157e0808a52304c02e31ce36))
+
 ## [0.1.4](https://github.com/DCsunset/batch-cmd/compare/v0.1.3...v0.1.4) (2023-09-15)
 
 

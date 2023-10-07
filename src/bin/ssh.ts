@@ -32,7 +32,7 @@ type Options = {
 program
   .name("batch-cmd")
   .description("Execute multiple commands in batch concurrently")
-  .version("v0.1.4")
+  .version("v0.1.5")
   .option("--ssh", "ssh command to use", "ssh")
   .option("-f, --file <file>", "use a file in which each line contains a host to execute command on")
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
