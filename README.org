@@ -47,7 +47,7 @@ with a prefix to distinguish them.
   # variables can be used in the template command (must be quoted)
   bcmd -v A B C -- "echo {}"
   # multiple variables can be used for each command by specifying a separator
-  bcmd -v A:1 B:2 C:2 -- "echo {0} {1}"
+  bcmd -v A:1 B:2 C:2 -s ":" -- "echo {0} {1}"
   # read variables from a file (can be combined with -v option)
   bcmd -f vars.txt -- "mkdir {0} && echo {0}"
   # pipe input to all commands
@@ -67,7 +67,7 @@ The first variable for each command must be the address of the remote machine.
   bssh -v host1 host2 host3 -- "ls"
   # multiple variables can be used for each command by specifying a separator
   # note: the first argument is consumed internally using {0}, so other placeholders must be numbered as well
-  bssh -v host1:A host2:B -- "echo {1}"
+  bssh -v host1:A host2:B -s ":" -- "echo {1}"
   # read variables from a file (can be combined with -v option)
   bssh -f hosts.txt -v host3 host4 -- "echo {0}"
   # pipe input to all commands
