@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.6](https://github.com/DCsunset/batch-cmd/compare/v0.1.5...v0.1.6) (2023-11-03)
+
+
+### Bug Fixes
+
+* fix hanging by listening on exit event and checking exitCode ([c0e07b0](https://github.com/DCsunset/batch-cmd/commit/c0e07b0797e779a3bfecb4d82c745efe0c5f967d))
+
+
+### Misc
+
+* fix example with specified separator ([5195c04](https://github.com/DCsunset/batch-cmd/commit/5195c04f9855727d1c8cd0566647404110fef330))
+
 ## [0.1.5](https://github.com/DCsunset/batch-cmd/compare/v0.1.4...v0.1.5) (2023-10-07)
 
 
