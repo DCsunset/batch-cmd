@@ -42,9 +42,8 @@ export async function parseVars(vars?: string[], file?: string, sep?: string) {
 }
 
 export function setupSignalHandler(executor: CommandExecutor) {
-  const signalHandler = new SignalHandler(["SIGINT", "SIGTERM"], (sig, cnt) => {
+  const signalHandler = new SignalHandler(["SIGINT", "SIGTERM"], (_sig, cnt) => {
     // Close input pipe to prevent hanging
-    process.stdin.emit("end");
     if (cnt === 1) {
       console.error(chalk.yellowBright("Terminating all commands..."));
       executor.kill("SIGTERM");

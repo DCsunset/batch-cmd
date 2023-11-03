@@ -46,7 +46,11 @@ class CommandExecutor {
     return Promise.all(
       this.processes.map(p => (
         new Promise(resolve => {
-          p.on("close", resolve);
+          p.on("exit", resolve);
+          // already exit (won't receive event)
+          if (p.exitCode !== null) {
+            resolve(p.exitCode);
+          }
         })
       ))
     );
