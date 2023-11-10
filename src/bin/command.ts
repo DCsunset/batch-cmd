@@ -25,16 +25,18 @@ type Options = {
   file?: string,
   vars?: string[],
   sep?: string,
+  prefix: boolean,
   debug?: boolean
 };
 
 program
-  .name("batch-cmd")
+  .name("bcmd")
   .description("Execute multiple commands in batch concurrently")
   .version("v0.1.6")
   .option("-f, --file <file>", "use a file in which each line contains a variable for the template command")
   .option("-v, --vars <var...>", "a list of variables used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
+  .option("-n, --no-prefix", "do not show prefixes on each line")
   .option("--debug", "enable debug mesages")
   .argument("<template...>", "template command to execute in batch (multiple args will be joined with spaces)")
   .action(execute);
@@ -44,7 +46,7 @@ async function execute(template: string[], options: Options) {
     const vars = await parseVars(options.vars, options.file, options.sep);
     const executor = new CommandExecutor(vars);
     setupSignalHandler(executor);
-    await runExecutor(executor, template.join(" "), options.sep);
+    await runExecutor(executor, template.join(" "), options);
   }
   catch (err: any) {
     if (options.debug) {

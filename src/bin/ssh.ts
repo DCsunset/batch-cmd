@@ -26,17 +26,19 @@ type Options = {
   file?: string,
   vars?: string[],
   sep?: string,
+  prefix: boolean,
   debug?: boolean
 };
 
 program
-  .name("batch-cmd")
-  .description("Execute multiple commands in batch concurrently")
+  .name("bssh")
+  .description("Execute multiple ssh commands in batch concurrently")
   .version("v0.1.6")
   .option("--ssh", "ssh command to use", "ssh")
   .option("-f, --file <file>", "use a file in which each line contains a host to execute command on")
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
+  .option("-n, --no-prefix", "do not show prefixes on each line")
   .option("--debug", "enable debug mesages")
   .argument("<template...>", "template command to execute in batch (multiple args will be joined with spaces)")
   .action(execute);
@@ -46,7 +48,7 @@ async function execute(template: string[], options: Options) {
     const vars = await parseVars(options.vars, options.file, options.sep);
     const executor = new SshExecutor(vars, options.ssh);
     setupSignalHandler(executor);
-    await runExecutor(executor, template.join(" "), options.sep);
+    await runExecutor(executor, template.join(" "), options);
   }
   catch (err: any) {
     if (options.debug) {
