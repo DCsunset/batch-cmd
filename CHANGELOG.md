@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.1](https://github.com/DCsunset/batch-cmd/compare/v0.2.0...v0.2.1) (2023-11-23)
+
+
+### Bug Fixes
+
+* clear timeout if data is available ([232ea22](https://github.com/DCsunset/batch-cmd/commit/232ea2270ad71bd8291b0d025b662e789c4c2fea))
+
 ## [0.2.0](https://github.com/DCsunset/batch-cmd/compare/v0.1.7...v0.2.0) (2023-11-23)
 
 
