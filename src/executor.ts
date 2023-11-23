@@ -18,7 +18,6 @@ import { spawn, ChildProcess } from "node:child_process";
 import stream from "node:stream";
 import stringFormat from "string-format";
 import { AsyncWrappable, asyncInterleaveReady, asyncMap, asyncWrap } from "iter-tools-es";
-import { createInterface } from "node:readline";
 
 class CommandExecutor {
   /// Pass a list of variables to each command
@@ -57,31 +56,18 @@ class CommandExecutor {
   }
 
   /// Line mode means collect output line by line
-  collect_output(source: "stdout" | "stderr", encoding?: BufferEncoding, lineMode?: boolean) {
-    const transform = (s: stream.Readable | null) => {
-      if (!s) {
-        return null;
-      }
-      let result: AsyncIterable<any> = s;
-      if (encoding) {
-        result = s.setEncoding(encoding);
-      }
-      if (lineMode) {
-        result = createInterface({ input: s });
-      }
-      return result;
-    };
+  collectOutput(source: "stdout" | "stderr", transform?: (s: stream.Readable) => AsyncWrappable<any>) {
     return asyncInterleaveReady(
       ...this.processes.map((p, i) => (
         asyncMap(
           data => ({ data, variable: this.variables[i] }),
-          transform(p[source])
+          (transform && p[source]) ? transform(p[source]!) : p[source]
         )
       ))
     );
   }
 
-  async pipe_input(source: AsyncWrappable<any>) {
+  async pipeInput(source: AsyncWrappable<any>) {
     for await (const data of asyncWrap(source)) {
       await Promise.all(this.processes.map(p => new Promise<void>(resolve => {
         if (p.stdin && !p.stdin.write(data)) {

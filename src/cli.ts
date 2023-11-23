@@ -15,9 +15,11 @@
 
 import chalk from "chalk";
 import { open } from "node:fs/promises";
+import stream from "node:stream";
 import { asyncMap, asyncFilter, findBest, firstHighest, asyncInterleaveReady, asyncForEach } from "iter-tools-es";
 import { CommandExecutor } from "./executor.js";
 import { SignalHandler } from "./signal.js";
+import { splitTransformer } from "./transform.js";
 
 // parse variables from command-line input
 export async function parseVars(vars?: string[], file?: string, sep?: string) {
@@ -66,21 +68,26 @@ export async function runExecutor(executor: CommandExecutor, template: string, o
   prefix: boolean
 }) {
   executor.run(template);
-  const inputPromise = executor.pipe_input(process.stdin);
+  const inputPromise = executor.pipeInput(process.stdin);
 
-  const stdout = asyncMap(
-    ({ data, variable }) => ({ data, variable, source: "stdout" }),
-    executor.collect_output("stdout", "utf-8", true)
-  );
-  const stderr = asyncMap(
-    ({ data, variable }) => ({ data, variable, source: "stderr" }),
-    executor.collect_output("stderr", "utf-8", true)
-  );
+  type SourceKind = "stdout" | "stderr";
+  const sources: SourceKind[] = ["stdout", "stderr"];
+
+  const transformOutput = (s: stream.Readable) => {
+    s.setEncoding("utf-8");
+    return splitTransformer(s, "\n");
+  };
+
+  const outputs = sources.map(source => asyncMap(
+    ({ data, variable }) => ({ data: data as string, variable, source }),
+    executor.collectOutput(source, transformOutput)
+  ))
 
   const sep = options?.sep;
   const vars = executor.variables.map(v => sep ? v.join(sep) : v[0]);
   const maxLen = findBest(firstHighest, vars.map(v => v.length))!;
-  for await (const { data, variable, source } of asyncInterleaveReady(stdout, stderr)) {
+
+  for await (const { data, variable, source } of asyncInterleaveReady(...outputs)) {
     const v = sep ? variable.join(sep) : variable[0];
     const outputFn = source === "stdout" ? console.log : console.error;
     const colorize = source === "stdout" ? chalk.gray : chalk.red;
