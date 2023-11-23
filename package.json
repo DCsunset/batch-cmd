@@ -1,6 +1,6 @@
 {
   "name": "batch-cmd",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Executing multiple commands in batches concurrently.",
   "main": "dist/lib.js",
   "types": "dist/lib.d.js",

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.0](https://github.com/DCsunset/batch-cmd/compare/v0.1.7...v0.2.0) (2023-11-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* write async transformer to split output by lines
+
+### Features
+
+* support flushing output on timeout ([194f10d](https://github.com/DCsunset/batch-cmd/commit/194f10d46f4e61e22eef949aaf9dca06f7e5c697))
+
+
+### Misc
+
+* write async transformer to split output by lines ([2d38a74](https://github.com/DCsunset/batch-cmd/commit/2d38a74229495e412158955b74c9aa6a127616c3))
+
 ## [0.1.7](https://github.com/DCsunset/batch-cmd/compare/v0.1.6...v0.1.7) (2023-11-11)
 
 
