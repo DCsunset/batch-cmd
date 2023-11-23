@@ -21,20 +21,20 @@ export async function* splitTransformer(iterable: AsyncIterable<string>, separat
   let it = iterable[Symbol.asyncIterator]();
   // store the promise to prevent losing data by calling next twice
   let itNext = it.next();
+  let timeoutId: number = 0;
   while (true) {
     const result = await (timeout <= 0 ?
-      itNext:
+      itNext :
       Promise.race([
         itNext,
-        new Promise<NodeJS.Timeout>(resolve => {
-          const id: NodeJS.Timeout = setTimeout(
-            () => resolve(id),
-            timeout
-          );
+        new Promise<undefined>(resolve => {
+          timeoutId = setTimeout(resolve, timeout);
         })
       ]));
 
-    if ("value" in result) {
+    if (result !== undefined) {
+      // Cancel timeout to release resources
+      clearTimeout(timeoutId);
       if (result.done) {
         break;
       }
