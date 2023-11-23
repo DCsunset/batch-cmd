@@ -17,7 +17,7 @@
 
 import { Command } from "commander";
 import { SshExecutor } from "../executor.js";
-import { parseVars, runExecutor, setupSignalHandler } from "../cli.js";
+import { parseIntOption, parseVars, runExecutor, setupSignalHandler } from "../cli.js";
 
 const program = new Command();
 
@@ -27,7 +27,8 @@ type Options = {
   vars?: string[],
   sep?: string,
   prefix: boolean,
-  debug?: boolean
+  debug?: boolean,
+  timeout: number
 };
 
 program
@@ -39,6 +40,7 @@ program
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
   .option("-n, --no-prefix", "do not show prefixes on each line")
+  .option("-t, --timeout <timeout>", "print incomplemete line on timeout (in ms). Timeout <= 0 to disable it.", parseIntOption, 500)
   .option("--debug", "enable debug mesages")
   .argument("<template...>", "template command to execute in batch (multiple args will be joined with spaces)")
   .action(execute);

@@ -20,6 +20,7 @@ import { asyncMap, asyncFilter, findBest, firstHighest, asyncInterleaveReady, as
 import { CommandExecutor } from "./executor.js";
 import { SignalHandler } from "./signal.js";
 import { splitTransformer } from "./transform.js";
+import { InvalidOptionArgumentError } from "commander";
 
 // parse variables from command-line input
 export async function parseVars(vars?: string[], file?: string, sep?: string) {
@@ -63,9 +64,10 @@ export function setupSignalHandler(executor: CommandExecutor) {
   signalHandler.register();
 }
 
-export async function runExecutor(executor: CommandExecutor, template: string, options?: {
+export async function runExecutor(executor: CommandExecutor, template: string, options: {
   sep?: string,
-  prefix: boolean
+  prefix: boolean,
+  timeout: number
 }) {
   executor.run(template);
   const inputPromise = executor.pipeInput(process.stdin);
@@ -75,7 +77,7 @@ export async function runExecutor(executor: CommandExecutor, template: string, o
 
   const transformOutput = (s: stream.Readable) => {
     s.setEncoding("utf-8");
-    return splitTransformer(s, "\n");
+    return splitTransformer(s, "\n", options.timeout);
   };
 
   const outputs = sources.map(source => asyncMap(
@@ -83,7 +85,7 @@ export async function runExecutor(executor: CommandExecutor, template: string, o
     executor.collectOutput(source, transformOutput)
   ))
 
-  const sep = options?.sep;
+  const sep = options.sep;
   const vars = executor.variables.map(v => sep ? v.join(sep) : v[0]);
   const maxLen = findBest(firstHighest, vars.map(v => v.length))!;
 
@@ -91,7 +93,7 @@ export async function runExecutor(executor: CommandExecutor, template: string, o
     const v = sep ? variable.join(sep) : variable[0];
     const outputFn = source === "stdout" ? console.log : console.error;
     const colorize = source === "stdout" ? chalk.gray : chalk.red;
-    const prefix = options?.prefix ? colorize(`${v.padEnd(maxLen)} | `) : "";
+    const prefix = options.prefix ? colorize(`${v.padEnd(maxLen)} | `) : "";
     outputFn(`${prefix}${data.trimEnd()}`);
   }
 
@@ -99,5 +101,13 @@ export async function runExecutor(executor: CommandExecutor, template: string, o
   // Close input pipe to prevent hanging
   process.stdin.emit("end");
   await inputPromise;
+}
+
+export function parseIntOption(value: string, _prev: number) {
+  const v = parseInt(value);
+  if (isNaN(v)) {
+    throw new InvalidOptionArgumentError("Not a number.")
+  }
+  return v;
 }
 
