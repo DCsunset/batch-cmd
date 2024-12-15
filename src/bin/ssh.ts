@@ -26,6 +26,7 @@ type Options = {
   file?: string,
   vars?: string[],
   sep?: string,
+  shell: string,
   prefix: boolean,
   debug?: boolean,
   timeout: number
@@ -39,6 +40,7 @@ program
   .option("-f, --file <file>", "use a file in which each line contains a host to execute command on")
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
+  .option("-S, --shell <shell>", "shell to use", "sh")
   .option("-n, --no-prefix", "do not show prefixes on each line")
   .option("-t, --timeout <timeout>", "print incomplemete line on timeout (in ms). Timeout <= 0 to disable it.", parseIntOption, 500)
   .option("--debug", "enable debug mesages")
@@ -48,7 +50,7 @@ program
 async function execute(template: string[], options: Options) {
   try {
     const vars = await parseVars(options.vars, options.file, options.sep);
-    const executor = new SshExecutor(vars, options.ssh);
+    const executor = new SshExecutor(vars, options);
     setupSignalHandler(executor);
     await runExecutor(executor, template.join(" "), options);
   }
