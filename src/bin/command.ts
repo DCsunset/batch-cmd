@@ -33,7 +33,7 @@ type Options = {
 program
   .name("bcmd")
   .description("Execute multiple commands in batch concurrently")
-  .version("v0.1.7")
+  .version("v0.1.8")
   .option("-f, --file <file>", "use a file in which each line contains a variable for the template command")
   .option("-v, --vars <var...>", "a list of variables used in the template command")
   .option("-s, --sep <separator>", "separator to split the variable")
