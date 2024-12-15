@@ -20,16 +20,22 @@ import stringFormat from "string-format";
 import { AsyncWrappable, asyncInterleaveReady, asyncMap, asyncWrap } from "iter-tools-es";
 import { createInterface } from "node:readline";
 
-class CommandExecutor {
+export type CommandExecutorOptions = {
+  shell?: string
+};
+
+export class CommandExecutor {
   /// Pass a list of variables to each command
   variables: string[][];
   processes: ChildProcess[] = [];
+  options?: CommandExecutorOptions;
 
-  constructor(variables: string[][]) {
+  constructor(variables: string[][], options?: CommandExecutorOptions) {
     if (variables.length === 0) {
       throw new Error("No variable provided");
     }
     this.variables = variables;
+    this.options = options;
   }
 
   /// Run command concurrently with template
@@ -37,7 +43,7 @@ class CommandExecutor {
     this.processes = this.variables.map(v => (
       spawn(
         stringFormat(template, ...v),
-        { shell: true }
+        { shell: this.options?.shell ?? "sh" }
       )
     ));
   }
@@ -105,22 +111,22 @@ class CommandExecutor {
   }
 }
 
-class SshExecutor extends CommandExecutor {
-  sshCommand: string;
+export type SshExecutorOptions = {
+  /// ssh command to use
+  ssh?: string
+} & CommandExecutorOptions;
+
+export class SshExecutor extends CommandExecutor {
+  options?: SshExecutorOptions;
 
   /// The first var for each command must be the host
-  constructor(vars: string[][], sshCommand: string = "ssh") {
-    super(vars);
-    this.sshCommand = sshCommand;
+  constructor(vars: string[][], options?: SshExecutorOptions) {
+    super(vars, options);
+    this.options = options;
   }
 
   run(template: string) {
-    super.run(`${this.sshCommand} {0} -- ${template}`);
+    super.run(`${this.options?.ssh ?? "ssh"} {0} -- ${template}`);
   }
 }
-
-export {
-  CommandExecutor,
-  SshExecutor
-};
 
