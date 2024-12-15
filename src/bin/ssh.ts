@@ -35,7 +35,7 @@ type Options = {
 program
   .name("bssh")
   .description("Execute multiple ssh commands in batch concurrently")
-  .version("v0.2.1")
+  .version("v0.2.2")
   .option("--ssh", "ssh command to use", "ssh")
   .option("-f, --file <file>", "use a file in which each line contains a host to execute command on")
   .option("-v, --vars <host...>", "a list of variables (hosts) used in the template command")

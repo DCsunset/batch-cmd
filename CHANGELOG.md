@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.2](https://github.com/DCsunset/batch-cmd/compare/v0.2.1...v0.2.2) (2024-12-15)
+
+
+### Features
+
+* support setting shell command ([effbd46](https://github.com/DCsunset/batch-cmd/commit/effbd46df1fd4bd79796c2121178bbc159dda795))
+
 ## [0.2.1](https://github.com/DCsunset/batch-cmd/compare/v0.2.0...v0.2.1) (2023-11-23)
 
 
